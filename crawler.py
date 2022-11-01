@@ -5,10 +5,6 @@ import pandas as pd
 
 baseurl = "https://drop.com"
 
-headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36"
-}
-
 productLinks = []
 count = 0
 productData = []
@@ -35,11 +31,35 @@ for product in productList:
         path = path[1:]
     else:
         pass
-    productLinks.append(baseurl + path)
+    if "buy" in path:
+        productLinks.append(baseurl + path)
+    else:
+        pass
 
 for link in productLinks:
-    k = requests.get(link, headers=headers).link
-    con = Soup(r, "html.parser")
+    k = requests.get(str(link)).text
+    con = Soup(k, "html.parser")
+
+    ### Write HTML into file for testing ###
+    # file = open("test.txt", "w")
+    # file.write(str(con))
+    # file.close()
 
     try:
-        price = con.find
+        title = (
+            con.find(
+                "div",
+                {"class": "DropPageHeader__drop_name__32Nat"},
+            )
+            .find("h1", {"class": "Text__type--title-0__2XDay"})
+            .text.strip()
+        )
+        print(title)
+    except:
+        title = None
+
+    product = {"title": title}
+    productData.append(product)
+
+df = pd.DataFrame(productData)
+print(df)
