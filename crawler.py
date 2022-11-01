@@ -1,4 +1,4 @@
-from numpy import product
+import numpy as np
 import requests
 from bs4 import BeautifulSoup as Soup
 import pandas as pd
@@ -54,7 +54,6 @@ for link in productLinks:
             .find("h1", {"class": "Text__type--title-0__2XDay"})
             .text.strip()
         )
-        print(title)
     except:
         title = None
 
