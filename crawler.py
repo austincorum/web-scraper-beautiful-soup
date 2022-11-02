@@ -1,46 +1,50 @@
-import numpy as np
 import requests
 from bs4 import BeautifulSoup as Soup
 import pandas as pd
 
 baseurl = "https://drop.com"
 
-productLinks = []
+productUrls = []
 count = 0
 productData = []
 
-# hardcoded url for v1
+# hardcoded url
 r = requests.get("https://drop.com/all-communities/drops").text
+
+# BeautifulSoup HTML parser
 soup = Soup(r, "html.parser")
 
-# add all product items into a list
+# add all products into a list
 productList = soup.find_all(
     "div",
     {"class": "Grid__gridItem__2qOsq"},
 )
 
-# find all product links
+# extract all product links
 for product in productList:
     path = product.find(
         "a",
         {"class": "Link2__link__1aAsF"},
     ).get("href")
 
-    # error checking - preventing product link from containing '//'
+    # error checking
+    # + prevent '//' in product link
+    # + product links all contain 'buy'
     if path[0] == "/" and baseurl[-1] == "/":
         path = path[1:]
     else:
         pass
     if "buy" in path:
-        productLinks.append(baseurl + path)
+        productUrls.append(baseurl + path)
     else:
         pass
 
-for link in productLinks:
+# Extract all product data
+for link in productUrls:
     k = requests.get(str(link)).text
     con = Soup(k, "html.parser")
 
-    ### Write HTML into file for testing ###
+    ### Write to HTML file for testing ###
     # file = open("test.txt", "w")
     # file.write(str(con))
     # file.close()
@@ -79,5 +83,6 @@ for link in productLinks:
     product = {"title": title, "price": price, "description": description}
     productData.append(product)
 
+# Add product data into DataFrame
 df = pd.DataFrame(productData)
 print(df)
