@@ -45,6 +45,7 @@ for link in productLinks:
     # file.write(str(con))
     # file.close()
 
+    # TITLE #
     try:
         title = (
             con.find(
@@ -57,7 +58,25 @@ for link in productLinks:
     except:
         title = None
 
-    product = {"title": title}
+    # PRICE #
+    try:
+        price = con.find(
+            "div",
+            {"class": "Text__type--price__1mumP"},
+        ).text.strip()
+    except:
+        price = None
+
+    # DESCRIPTION #
+    try:
+        description = con.find(
+            "div",
+            {"class": "SingleTextColumn__description_text__OHaPK"},
+        ).text.strip()
+    except:
+        description = None
+
+    product = {"title": title, "price": price, "description": description}
     productData.append(product)
 
 df = pd.DataFrame(productData)
